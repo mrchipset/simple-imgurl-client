@@ -1,58 +1,51 @@
 import React from 'react';
-import logo from './logo.svg';
 import { Counter } from './features/counter/Counter';
 import './App.css';
+import AddFab from './AddFab';
+import MyHeader from './MyHeader';
+import UploadImgDlg from './UploadImgDlg';
+import MyImageList from './MyImageList';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
-  );
+type AppProps = {}
+type AppState = {
+  open_upload_dlg: boolean
+}
+class App extends React.Component<AppProps, AppState> {
+
+  readonly state: AppState = {
+    open_upload_dlg: false
+  }
+
+  constructor(props: AppProps | Readonly<AppProps>) {
+    super(props)
+    this.handleUploadDlgClose = this.handleUploadDlgClose.bind(this)
+    this.handleFabClicked = this.handleFabClicked.bind(this)
+  }
+
+  handleUploadDlgClose(): void {
+    this.setState({
+      open_upload_dlg: false
+    })
+  }
+
+  handleFabClicked(): void {
+    this.setState({
+      open_upload_dlg: true
+    })
+  }
+
+  render(): React.ReactNode {
+    const open = this.state.open_upload_dlg
+
+    return (
+      <div className="App">
+        <MyHeader />
+        <MyImageList/>
+        <UploadImgDlg open={open} handleClose={this.handleUploadDlgClose} />
+        <AddFab handleClick={this.handleFabClicked} />
+      </div>
+    );
+  }
 }
 
 export default App;

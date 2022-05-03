@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .App-logo {
@@ -37,3 +40,4 @@
     transform: translateY(0px);
   }
 }
+
