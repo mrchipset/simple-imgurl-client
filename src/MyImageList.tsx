@@ -4,30 +4,54 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import React from 'react';
 import { MouseEvent } from 'react'
+import service  from './service'
+
+const BUCKET = 'foo'
 
 type ImgItem = {
     img: string,
     title: string,
     key: string,
-    bucket: string
+}
+type MyImageListProps = {
+    // TODO add a function to show new added images
 }
 
 type MyImageListState = {
     items: ImgItem[]
 }
-class MyImageList extends React.Component<{}, MyImageListState> {
+class MyImageList extends React.Component<MyImageListProps, MyImageListState> {
     readonly state: MyImageListState = {
         items: []
     }
     
-
+    
     constructor(props: any) {
         super(props)
         this.handleDeleteItem = this.handleDeleteItem.bind(this)
         this.handleCopyAddr = this.handleCopyAddr.bind(this)
-
+        
     }
 
+    componentDidMount() {
+        service.List(BUCKET).then((items) => {
+            console.log('Mount finish list')
+            const imgItems = new Array<ImgItem>(items.length)
+            items.forEach((item, idx) => {
+                imgItems[idx] = {
+                    img: service.Get(BUCKET, item.Key),
+                    title: item.Key,
+                    key: item.Key
+                }
+                console.log(item.Key)
+            })
+            this.setState({
+                items: imgItems
+            })
+        })
+       
+    }
+    
     handleDeleteItem(e: MouseEvent<HTMLButtonElement>): void {
         const id = e.currentTarget.id
         const idxStr = id.match(/\d+/g)
@@ -37,11 +61,15 @@ class MyImageList extends React.Component<{}, MyImageListState> {
         const idx = parseInt(idxStr[0])
         // remove the idx item
         const item = this.state.items[idx]
-         
-        this.setState({
-            items: this.state.items.filter((_, i) => i !==idx)
+        service.Delete(BUCKET, item.key).then((ret) => {
+            if (ret) {
+                this.setState({
+                    items: this.state.items.filter((_, i) => i !==idx)
+                })
+            }
+            // this.state.items.splice(idx, 1)
         })
-        // this.state.items.splice(idx, 1)
+
         console.log(`clicked button ${idx}`)
     }
 
