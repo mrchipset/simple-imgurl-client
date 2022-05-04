@@ -12,7 +12,8 @@ const BUCKET = 'foo'
 
 type UploadImgDlgProps = {
     open: boolean,
-    handleClose: Function
+    handleClose: Function,
+    handleUpload: Function,
 }
 
 type UploadImgDlgState = {
@@ -41,7 +42,17 @@ class UploadImgDlg extends React.Component<UploadImgDlgProps, UploadImgDlgState>
         files.forEach((file) => {
             file.text().then((value) => {
                 const _md5 = md5(value)
-                service.Put(BUCKET, _md5, file)
+                service.Put(BUCKET, _md5, file).then(ret => {
+                    console.log('PUT:' + ret)
+                    if (ret) {
+                        const item = {
+                            img: service.Get(BUCKET, _md5),
+                            key: _md5,
+                            bucket: BUCKET
+                        }
+                        this.props.handleUpload(item)
+                    }
+                })
             })
         })
         this.props.handleClose()

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { read } from "fs";
 
 // const baseURL = 'http://localhost/api/'
 const baseURL = '/api/'
@@ -21,22 +22,32 @@ class Service {
     async Put(bucket: string, object: string, file: File): Promise<boolean> {
         const url = baseURL + 'obj/' + bucket + '/'+ object
         let ret = false
-        axios({
-            method:'put',
-            url: url,
-            data: file.text,
-            headers: {
-                'Content-Type': file.type,
-                'Access-Control-Allow-Origin': '*',
+        var fileReader = new FileReader()
+     
+        return new Promise(resolve => {
+            fileReader.onload = (e) => {
+                const data = e.target?.result
+                axios({
+                    method:'put',
+                    url: url,
+                    data: data,
+                    headers: {
+                        'Content-Type': file.type,
+                    }
+                }).then(function (response) {
+                    ret = response.status === 200
+                    resolve(ret)
+                }).catch(function (error) {
+                    console.log(error)
+                    resolve(false)
+                }).finally(function() {
+                    console.log('finish request')
+                })
             }
-        }).then(function (response) {
-            ret = response.status === 200
-        }).catch(function (error) {
-            console.log(error)
-        }).finally(function() {
-            console.log('finish request')
+            fileReader.readAsArrayBuffer(file)
+
         })
-        return ret;
+        
     }
 
     async List(bucket: string): Promise<ListItem[]> {
@@ -70,7 +81,6 @@ class Service {
     async Delete(bucket: string, object: string): Promise<boolean> {
         const url = baseURL + 'obj/' + bucket + '/'+ object
         return new Promise((resolve) => {
-            let ret = false
             axios({
                 method:'delete',
                 url: url,

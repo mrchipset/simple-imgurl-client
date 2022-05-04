@@ -5,6 +5,8 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import React from 'react';
 import { MouseEvent } from 'react'
 import service  from './service'
+import AddFab from './AddFab'
+import UploadImgDlg from './UploadImgDlg';
 
 const BUCKET = 'foo'
 
@@ -18,19 +20,23 @@ type MyImageListProps = {
 }
 
 type MyImageListState = {
-    items: ImgItem[]
+    items: ImgItem[],
+    open_upload_dlg: boolean
 }
 class MyImageList extends React.Component<MyImageListProps, MyImageListState> {
     readonly state: MyImageListState = {
-        items: []
+        items: [],
+        open_upload_dlg: false
     }
     
     
     constructor(props: any) {
         super(props)
+        this.handleUploadDlgClose = this.handleUploadDlgClose.bind(this)
+        this.handleFabClicked = this.handleFabClicked.bind(this)
         this.handleDeleteItem = this.handleDeleteItem.bind(this)
         this.handleCopyAddr = this.handleCopyAddr.bind(this)
-        
+        this.handleUploadSuccess = this.handleUploadSuccess.bind(this)
     }
 
     componentDidMount() {
@@ -52,6 +58,18 @@ class MyImageList extends React.Component<MyImageListProps, MyImageListState> {
        
     }
     
+    handleUploadDlgClose(): void {
+        this.setState({
+          open_upload_dlg: false
+        })
+      }
+    
+      handleFabClicked(): void {
+        this.setState({
+          open_upload_dlg: true
+        })
+      }
+
     handleDeleteItem(e: MouseEvent<HTMLButtonElement>): void {
         const id = e.currentTarget.id
         const idxStr = id.match(/\d+/g)
@@ -85,7 +103,17 @@ class MyImageList extends React.Component<MyImageListProps, MyImageListState> {
         console.log(`clicked button ${idx}`)
     }
 
+    handleUploadSuccess(item: ImgItem): void {
+        let items = this.state.items
+        items.push(item)
+        this.setState({
+            items: items
+        })
+    }
+
     render(): React.ReactNode {
+        const open = this.state.open_upload_dlg
+
         function srcset(image: string, width: number, height: number, rows = 1, cols = 1) {
             return {
                 src: `${image}?w=${width * cols}&h=${height * rows}&fit=crop&auto=format`,
@@ -155,6 +183,8 @@ class MyImageList extends React.Component<MyImageListProps, MyImageListState> {
                         );
                     })}
                 </ImageList>
+                <AddFab handleClick={this.handleFabClicked} />
+                <UploadImgDlg open={open} handleClose={this.handleUploadDlgClose} handleUpload={this.handleUploadSuccess}/>
             </Box>
         );
     }

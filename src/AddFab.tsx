@@ -1,6 +1,5 @@
 import React from 'react';
 import { MouseEvent } from 'react'
-import { Counter } from './features/counter/Counter';
 import './App.css';
 
 import Fab from '@mui/material/Fab';
