@@ -18,8 +18,6 @@ class App extends React.Component<AppProps, AppState> {
 
   }
 
-
-
   render(): React.ReactNode {
 
     return (
