@@ -88,7 +88,7 @@ class MyImageList extends React.Component<MyImageListProps, MyImageListState> {
             // this.state.items.splice(idx, 1)
         })
 
-        console.log(`clicked button ${idx}`)
+        // console.log(`clicked button ${idx}`)
     }
 
     handleCopyAddr(e: MouseEvent<HTMLButtonElement>): void {
@@ -99,8 +99,14 @@ class MyImageList extends React.Component<MyImageListProps, MyImageListState> {
         }
         const idx = parseInt(idxStr[0])
         const url = this.state.items[idx].img
-        copyTextToClipboard(url)
-        console.log(`clicked button ${idx}`)
+        if (typeof window !== 'undefined') {
+            var path = window.location.protocol + '//' + window.location.host// (or whatever)
+            copyTextToClipboard(path + url)
+        } else {
+            // work out what you want to do server-side...
+            copyTextToClipboard(url)
+        }
+        // console.log(`clicked button ${idx}`)
     }
 
     handleUploadSuccess(item: ImgItem): void {
