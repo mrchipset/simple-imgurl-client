@@ -20,7 +20,8 @@ class Service {
     }
 
     async Put(bucket: string, object: string, file: File): Promise<boolean> {
-        const url = baseURL + 'obj/' + bucket + '/'+ object
+        const ext = file.type.split('/')[1]
+        const url = baseURL + 'obj/' + bucket + '/'+ object + '.' + ext
         let ret = false
         var fileReader = new FileReader()
      
